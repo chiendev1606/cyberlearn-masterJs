@@ -8,13 +8,14 @@ import {
 	dispatchActionGetProjectsSaga,
 	dispatchActionSearchUserSaga,
 	dipatchActionAddUserProjectSaga,
+	dispatchRemoveUserProjectSaga,
 } from '../../../sagas/jiraSaga/actions';
 import { OPEN_DRAWER } from '../../../util/constants/constants';
 import { dispatchActionChangeDrawerState, dispatchProjectEditReducer } from '../actions/actions';
 import { projectManagementSelector, usersProjectSelector } from '../Selectors/CyberBugSelectors';
 import DrawerCyberbug from './DrawerCyberbug';
 
-function ProjectManagement() {
+function ProjectManagement(props) {
 	const dispatch = useDispatch();
 	const projects = useSelector(projectManagementSelector);
 	const searchRef = useRef(null);
@@ -31,6 +32,7 @@ function ProjectManagement() {
 
 	const handleSelect = (userId, projectId) => {
 		dispatch(dipatchActionAddUserProjectSaga({ userId: Number(userId), projectId: Number(projectId) }));
+		setValue('');
 	};
 
 	const onChange = (data, { label, value }) => {
@@ -75,12 +77,54 @@ function ProjectManagement() {
 			key: 'members',
 			render: (text, record, index) => {
 				return (
-					<div className="d-flex align-center ">
-						<Avatar.Group maxCount={2} size="large">
-							{record.members.map((item, idx) => (
-								<Avatar size="large" key={idx} src={item.avatar} />
-							))}
-						</Avatar.Group>
+					<div className="d-flex align-center">
+						<Popover
+							content={
+								<table className="table-bordered">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Avatar</th>
+											<th>Username</th>
+										</tr>
+									</thead>
+									<tbody>
+										{record.members &&
+											record.members.map(member => (
+												<tr key={member.userId}>
+													<td>{member.userId}</td>
+													<td>
+														<Avatar src={member.avatar}></Avatar>
+													</td>
+													<td>{member.name}</td>
+													<td>
+														<button
+															className="btn btn-danger"
+															onClick={() => {
+																dispatch(
+																	dispatchRemoveUserProjectSaga({
+																		projectId: record.id,
+																		userId: member.userId,
+																	})
+																);
+															}}>
+															X
+														</button>
+													</td>
+												</tr>
+											))}
+									</tbody>
+								</table>
+							}
+							title="User in this project">
+							<div>
+								<Avatar.Group maxCount={2} size="large">
+									{record.members.map((item, idx) => (
+										<Avatar size="large" key={idx} src={item.avatar} />
+									))}
+								</Avatar.Group>
+							</div>
+						</Popover>
 						<Popover
 							placement="rightTop"
 							title="Add users"
@@ -98,7 +142,9 @@ function ProjectManagement() {
 								/>
 							)}
 							trigger="click">
-							<button className="btn btn-success" style={{ borderRadius: '50%' }}>
+							<button
+								className="btn btn-success"
+								style={{ borderRadius: '50%', width: '40px', height: '40px' }}>
 								+
 							</button>
 						</Popover>
@@ -134,12 +180,23 @@ function ProjectManagement() {
 			),
 		},
 	];
-
 	return (
 		<>
 			<DrawerCyberbug />
 			<div style={{ flex: 1 }}>
-				<Table columns={columns} rowKey="id" dataSource={projects} onChange={onChange} />
+				<Table
+					onRow={(record, rowIndex) => {
+						return {
+							onClick: e => {
+								props.history.push(`/cyberbug/${record.id}`);
+							},
+						};
+					}}
+					columns={columns}
+					rowKey="id"
+					dataSource={projects}
+					onChange={onChange}
+				/>
 			</div>
 		</>
 	);

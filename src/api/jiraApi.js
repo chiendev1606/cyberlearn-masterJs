@@ -1,3 +1,4 @@
+import { DatabaseOutlined } from '@ant-design/icons';
 import Axios from 'axios';
 import { ACCESS_TOKEN } from '../util/constants/constants';
 
@@ -50,8 +51,35 @@ export const JiraAPI = {
 	addUserProject: data =>
 		Axios({
 			url: `${URL}/api/Project/assignUserProject`,
-			method: 'get',
+			method: 'post',
 			data: data,
 			headers,
 		}),
+	removeUserFromProject: data =>
+		Axios({ url: `${URL}/api/Project/removeUserFromProject`, method: 'post', data: data, headers }),
+	getProjectDetails: id =>
+		Axios({
+			url: `${URL}/api/Project/getProjectDetail?id=${id}`,
+			method: 'get',
+			headers,
+		}),
+	getPriorities: () =>
+		Axios({
+			url: `${URL}/api/Priority/getAll`,
+			method: 'get',
+		}),
+	getTaskType: () => Axios({ url: `${URL}/api/TaskType/getAll`, method: 'get' }),
+	getUser: (data = '') => Axios({ url: `${URL}/api/Users/getUser`, method: 'get', data, headers }),
+	getStatus: () => Axios({ url: `${URL}/api/Status/getAll`, method: 'get' }),
+	createTask: data => Axios({ url: `${URL}/api/Project/createTask`, method: 'post', data: data, headers }),
+	getTaskDetail: data =>
+		Axios({ url: `${URL}/api/Project/getTaskDetail?taskId=${data}`, method: 'get', headers }),
+	changeStatusTaskDetail: data =>
+		Axios({ url: `${URL}/api/Project/updateStatus`, method: 'put', data, headers }),
+	assignUserTask: data => Axios({ url: `${URL}/api/Project/assignUserTask`, method: 'post', data, headers }),
+	updateTask: data => Axios({ url: `${URL}/api/Project/updateTask`, method: 'post', data, headers }),
+	getAllComments: id => Axios({ url: `${URL}/api/Comment/getAll?taskId=${id}`, method: 'get' }),
+	signUp: data => Axios({ url: `${URL}/api/Users/signup`, method: 'post', data }),
+	editUser: data => Axios({ url: `${URL}/api/Users/editUser`, method: 'put', data }),
+	deleteUser: data => Axios({ url: `${URL}/api/Users/deleteUser?id=${data}}`, method: 'delete', headers }),
 };

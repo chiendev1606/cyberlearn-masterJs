@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { Axios } from 'axios';
 
 const URL = 'http://svcy.myclass.vn/api/';
 export const STATUS = {
