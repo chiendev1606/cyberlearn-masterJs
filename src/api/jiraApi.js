@@ -1,9 +1,8 @@
-import { DatabaseOutlined } from '@ant-design/icons';
 import Axios from 'axios';
 import { ACCESS_TOKEN } from '../util/constants/constants';
 
 const URL = 'http://casestudy.cyberlearn.vn';
-const headers = { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN) };
+const headers = { Authorization: 'bearer ' + localStorage.getItem(ACCESS_TOKEN) };
 
 export const JiraAPI = {
 	singIn: user =>
@@ -81,5 +80,12 @@ export const JiraAPI = {
 	getAllComments: id => Axios({ url: `${URL}/api/Comment/getAll?taskId=${id}`, method: 'get' }),
 	signUp: data => Axios({ url: `${URL}/api/Users/signup`, method: 'post', data }),
 	editUser: data => Axios({ url: `${URL}/api/Users/editUser`, method: 'put', data }),
-	deleteUser: data => Axios({ url: `${URL}/api/Users/deleteUser?id=${data}}`, method: 'delete', headers }),
+	deleteUser: data => Axios({ url: `${URL}/api/Users/deleteUser?id=${data}`, method: 'delete', headers }),
+	insertComment: data => Axios({ url: `${URL}/api/Comment/insertComment`, method: 'post', data, headers }),
+	updateComment: data =>
+		Axios({
+			url: `${URL}/api/Comment/updateComment?id=${data.id}&contentComment=${data.contentComment}`,
+			method: 'put',
+			headers,
+		}),
 };

@@ -14,6 +14,7 @@ import {
 import { useFormik } from 'formik';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 import * as Yup from 'yup';
 import { dispatchActionSignInSaga } from '../../../sagas/jiraSaga/actions';
 import { errorSelector } from '../selectors/selectors';
@@ -92,9 +93,16 @@ const UserLogin = props => {
 						label="Remember me"
 					/>
 
-					<Button type="submit" variant="contained" color="primary" fullWidth>
-						Sign in
-					</Button>
+					<div className="d-flex justify-content-center">
+						<Button type="submit" variant="contained" color="primary" className="mr-2">
+							Sign in
+						</Button>
+						<Button type="button" variant="contained" color="secondary">
+							<NavLink style={{ color: 'white' }} to="/signup">
+								Sign Up
+							</NavLink>
+						</Button>
+					</div>
 				</Box>
 			</Container>
 		</>

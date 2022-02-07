@@ -22,6 +22,8 @@ import {
 	SIGN_UP_SAGA,
 	EDIT_USER_SAGA,
 	DELETE_USER_SAGA,
+	POST_COMMENT_SAGA,
+	UPDATE_COMMENT_SAGA,
 } from '../../util/constants/constants';
 
 export const dispatchActionSignInSaga = user => ({
@@ -116,5 +118,15 @@ export const dispatchActionEditUserSaga = data => ({
 
 export const dispatchActionDeleteUser = data => ({
 	type: DELETE_USER_SAGA,
+	payload: data,
+});
+
+export const dispatchActionPostCommentSaga = data => ({
+	type: POST_COMMENT_SAGA,
+	payload: data,
+});
+
+export const dispatchActionUpdateCommentSaga = data => ({
+	type: UPDATE_COMMENT_SAGA,
 	payload: data,
 });

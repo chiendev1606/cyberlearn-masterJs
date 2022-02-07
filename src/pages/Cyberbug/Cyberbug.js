@@ -51,7 +51,7 @@ const Cyberbug = ({ match }) => {
 				</div>
 				<div className="content" style={{ display: 'flex' }}>
 					{projectDetails.lstTask?.map((task, idx) => (
-						<div className="card" style={{ width: '17rem' }}>
+						<div key={idx} className="card" style={{ width: '17rem' }}>
 							<div className="card-header"> {task.statusName} </div>
 							<ul className="list-group list-group-flush">
 								{task.lstTaskDeTail?.map((item, idx) => (

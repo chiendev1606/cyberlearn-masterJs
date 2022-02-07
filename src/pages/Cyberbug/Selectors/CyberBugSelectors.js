@@ -14,6 +14,7 @@ export const ChangeModalVisibleSelector = state => state.modalProjectDetailReduc
 export const taskDetailSelector = state => state.taskDetailsReducer.taskDetails;
 export const reporterSelector = state => state.taskDetailsReducer.reporter;
 export const userSelector = state => state.jiraReducer.user;
+export const isLoginSelector = state => state.jiraReducer.isLogin;
 export const searchTextSelector = state => state.searchTextReducer.searchText;
 export const ChangeModalEditUserVisibleSelector = state => state.modalEditUserReducer.showModal;
 export const CloseModalEditUserVisibleSelector = state => state.modalEditUserReducer.handleCancel;
@@ -22,3 +23,6 @@ export const userEditSelector = state => state.modalEditUserReducer.userEdit;
 export const getUserByFilterSelector = createSelector(getUserSelector, searchTextSelector, (users, text) => {
 	return users.filter(user => user.name.includes(text));
 });
+
+export const buttonEditSelector = state => state.taskDetailsReducer.isOnButtonEditComment;
+export const editCommentSelector = state => state.taskDetailsReducer.commentEdit;

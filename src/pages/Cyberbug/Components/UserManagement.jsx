@@ -1,12 +1,12 @@
-import React from 'react';
-import { Table, Space, Input } from 'antd';
-import { NavLink } from 'react-router-dom';
 import { SearchOutlined } from '@ant-design/icons';
+import { Input, Space, Table } from 'antd';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { NavLink } from 'react-router-dom';
+import { dispatchActionDeleteUser } from '../../../sagas/jiraSaga/actions';
 import { dispatchActionChangeSearchText, dispatchActionUserEdit } from '../actions/actions';
 import { ChangeModalEditUserVisibleSelector, getUserByFilterSelector } from '../Selectors/CyberBugSelectors';
 import ModalEditUser from './ModalEditUser';
-import { dispatchActionDeleteUser } from '../../../sagas/jiraSaga/actions';
 
 const UserManagement = props => {
 	const dispatch = useDispatch();

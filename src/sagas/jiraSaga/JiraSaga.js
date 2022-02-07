@@ -9,6 +9,7 @@ import {
 	dispatchActionGetTaskTypeReducer,
 	dispatchActionGetUserReducer,
 	dispatchCategoryProjectReducer,
+	dispatchChangeButtonEditComment,
 	dispatchGetProjectDetailsReducer,
 	dispatchGetTaskDetailsReducer,
 	dispatchUsersProjectReducer,
@@ -43,11 +44,13 @@ import {
 	GET_TASK_DETAIlS_SAGA,
 	GET_TASK_TYPE_API_SAGA,
 	GET_USER_SAGA,
+	POST_COMMENT_SAGA,
 	REMOVE_USER_PROJECT_SAGA,
 	SEARCH_USER_API_SAGA,
 	SIGN_IN_SAGA,
 	SIGN_UP_SAGA,
 	STATUS_API,
+	UPDATE_COMMENT_SAGA,
 	UPDATE_TASK_SAGA,
 	USER,
 } from '../../util/constants/constants';
@@ -61,15 +64,15 @@ import {
 
 function* sigIn({ type, user }) {
 	try {
-		const { data, ...res } = yield call(() => JiraAPI.singIn(user));
+		const res = yield call(() => JiraAPI.singIn(user));
 		yield put(dispatchChangeLoadingReducer());
 		yield delay(1000);
 
 		if (res.status === STATUS_API.SUCCESS) {
-			localStorage.setItem(USER, JSON.stringify(user));
-			localStorage.setItem(ACCESS_TOKEN, data.content.accessToken);
+			localStorage.setItem(USER, JSON.stringify(res.data.content));
+			localStorage.setItem(ACCESS_TOKEN, res.data.content.accessToken);
 
-			yield put(dispatchSignInReducer(data.content));
+			yield put(dispatchSignInReducer(res.data.content));
 
 			yield put(dispatchErrorSignIn(''));
 			history.push('/projectManagement');
@@ -273,6 +276,7 @@ function* getStatus() {
 	try {
 		const { data, status } = yield call(() => JiraAPI.getStatus());
 		if (status === STATUS_API.SUCCESS) {
+			<div></div>;
 			yield put(dispatchActionGetStatusReducer(data.content));
 		}
 	} catch (error) {
@@ -433,4 +437,38 @@ function* deleteUser(action) {
 
 export function* watchActionDeleteUser() {
 	yield takeLatest(DELETE_USER_SAGA, deleteUser);
+}
+
+function* insertComment(action) {
+	try {
+		const { data, status } = yield call(() => JiraAPI.insertComment(action.payload));
+		if (status === STATUS_API.SUCCESS) {
+			yield put(dispatchActionGetTaskDetailsSaga(action.payload.taskId));
+			Notification('success', 'Đã thếm comment !!');
+		}
+	} catch (error) {
+		Notification('error', 'Thếm comment thất bại !!');
+		console.log(error);
+	}
+}
+
+export function* watchActionInsertComment() {
+	yield takeLatest(POST_COMMENT_SAGA, insertComment);
+}
+
+function* updateComment(action) {
+	console.log(action);
+	try {
+		const { data, status } = yield call(() => JiraAPI.updateComment(action.payload));
+		if (status === STATUS_API.SUCCESS) {
+			yield put(dispatchChangeButtonEditComment(false));
+			yield put(dispatchActionGetTaskDetailsSaga(action.payload.taskId));
+		}
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export function* watchActionUpdateComment() {
+	yield takeLatest(UPDATE_COMMENT_SAGA, updateComment);
 }

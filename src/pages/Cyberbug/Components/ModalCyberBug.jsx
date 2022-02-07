@@ -3,9 +3,15 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Avatar, Modal, Popover, Select } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { dispatchActionGetAllComment, dispatchActionUpdateTaskSaga } from '../../../sagas/jiraSaga/actions';
-import { dispatchActionChangeVisibleModal } from '../actions/actions';
 import {
+	dispatchActionPostCommentSaga,
+	dispatchActionUpdateCommentSaga,
+	dispatchActionUpdateTaskSaga,
+} from '../../../sagas/jiraSaga/actions';
+import { dispatchActionChangeVisibleModal, dispatchUpdateCommentReducer } from '../actions/actions';
+import {
+	buttonEditSelector,
+	editCommentSelector,
 	getStatusSelector,
 	getUserSelector,
 	prioritiesSelector,
@@ -15,8 +21,9 @@ import {
 } from '../Selectors/CyberBugSelectors';
 
 const ModalCyberBug = () => {
-	const dispatch = useDispatch();
+	const [textInputComment, setTextInputComment] = useState('');
 
+	const dispatch = useDispatch();
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const taskDetail = useSelector(taskDetailSelector);
 	const status = useSelector(getStatusSelector);
@@ -24,8 +31,11 @@ const ModalCyberBug = () => {
 	const usersProject = useSelector(getUserSelector);
 	const reporter = useSelector(reporterSelector);
 	const user = useSelector(userSelector);
+	const isOnButtonEdit = useSelector(buttonEditSelector);
+	const commentEdit = useSelector(editCommentSelector);
 
 	const refEditor = useRef(null);
+	const refEditorComment = useRef(null);
 
 	const [visibleEditor, setVisibleEditor] = useState(false);
 
@@ -49,6 +59,10 @@ const ModalCyberBug = () => {
 			})
 		);
 	}, [dispatch]);
+
+	useEffect(() => {
+		setTextInputComment(commentEdit ? commentEdit.commentContent : '');
+	}, [isOnButtonEdit, commentEdit]);
 
 	return (
 		<>
@@ -178,29 +192,7 @@ const ModalCyberBug = () => {
 													</div>
 												)}
 											</div>
-											{/* <div style={{ fontWeight: 500, marginBottom: 10 }}>
-												Jira Software (software projects) issue types:
-											</div> */}
-											{/* <div className="title">
-												<div className="title-item">
-													<h3>
-														BUG <i className="fa fa-bug" />
-													</h3>
-													<p> A bug is a problem which impairs or prevents the function of a product. </p>
-												</div>
-												<div className="title-item">
-													<h3>
-														STORY <i className="fa fa-book-reader" />
-													</h3>
-													<p> A user story is the smallest unit of work that needs to be done. </p>
-												</div>
-												<div className="title-item">
-													<h3>
-														TASK <i className="fa fa-tasks" />
-													</h3>
-													<p>A task represents work that needs to be done</p>
-												</div>
-											</div> */}
+
 											<div className="comment">
 												<h6>Comment</h6>
 												<div className="block-comment" style={{ display: 'flex' }}>
@@ -208,30 +200,56 @@ const ModalCyberBug = () => {
 														<img src={user.avatar} alt="icon" />
 													</div>
 													<div className="input-comment">
-														<input
-															type="text"
-															placeholder="Add a comment ..."
-															onKeyPress={e => {
-																if (e.key === 'Enter') {
-																}
+														<Editor
+															apiKey="h3tobb2dzm8tdlttg4n7q69r0sqyshw7qwfh5prnjulj6ujg"
+															onInit={(evt, editor) => (refEditorComment.current = editor)}
+															initialValue={textInputComment}
+															init={{
+																height: 300,
+																menubar: false,
+																plugins: [
+																	'advlist autolink lists link image charmap print preview anchor',
+																	'searchreplace visualblocks code fullscreen',
+																	'insertdatetime media table paste code help wordcount',
+																],
+																toolbar:
+																	'undo redo | formatselect | ' +
+																	'bold italic backcolor | alignleft aligncenter ' +
+																	'alignright alignjustify | bullist numlist outdent indent | ' +
+																	'removeformat | help',
+																content_style:
+																	'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
 															}}
 														/>
-														<p>
-															<span style={{ fontWeight: 500, color: 'gray' }}>Protip:</span>
-															<span>
-																press
-																<span style={{ fontWeight: 'bold', background: '#ecedf0', color: '#b4bac6' }}>
-																	M
-																</span>
-																to comment
-															</span>
+
+														<p className="text-center">
+															<button
+																className="btn btn-primary mt-3 w-25"
+																onClick={() => {
+																	isOnButtonEdit
+																		? dispatch(
+																				dispatchActionUpdateCommentSaga({
+																					taskId: taskDetail.taskId,
+																					contentComment: textInputComment,
+																					id: commentEdit.id,
+																				})
+																		  )
+																		: dispatch(
+																				dispatchActionPostCommentSaga({
+																					taskId: taskDetail.taskId,
+																					contentComment: textInputComment,
+																				})
+																		  );
+																}}>
+																{isOnButtonEdit ? 'Edit' : 'Comment'}
+															</button>
 														</p>
 													</div>
 												</div>
 												<div className="lastest-comment">
 													{taskDetail.lstComment
 														? taskDetail.lstComment.map(comment => (
-																<div key={comment.id} className="comment-item">
+																<div key={comment.id} className="comment-item my-2">
 																	<div className="display-comment" style={{ display: 'flex' }}>
 																		<div className="avatar">
 																			<img src={comment.avatar} alt="icon" />
@@ -239,10 +257,18 @@ const ModalCyberBug = () => {
 																		<div>
 																			<p style={{ marginBottom: 5 }}>{comment.name}</p>
 																			<p style={{ marginBottom: 5 }}>{comment.commentContent}</p>
-																			<div>
-																				<span style={{ color: '#929398' }}>Edit</span>•
-																				<span style={{ color: '#929398' }}>Delete</span>
-																			</div>
+																			{comment.idUser === user.id && (
+																				<div>
+																					<span
+																						style={{ color: '#929398', cursor: 'pointer' }}
+																						onClick={() => {
+																							dispatch(dispatchUpdateCommentReducer(comment));
+																						}}>
+																						Edit
+																					</span>
+																					•<span style={{ color: '#929398', cursor: 'pointer' }}>Delete</span>
+																				</div>
+																			)}
 																		</div>
 																	</div>
 																</div>

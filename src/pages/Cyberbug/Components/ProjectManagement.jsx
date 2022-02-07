@@ -3,6 +3,7 @@ import { AutoComplete, Avatar, Popconfirm, Popover, Table, Tag } from 'antd';
 import 'antd/dist/antd.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 import {
 	dispatchActionDeleteProjectSaga,
 	dispatchActionGetProjectsSaga,
@@ -51,8 +52,10 @@ function ProjectManagement(props) {
 		},
 		{
 			title: 'Name',
-			dataIndex: 'projectName',
 			key: 'projectName',
+			render: (record, text, index) => {
+				return <NavLink to={`/cyberbug/${record.id}`}>{record.projectName}</NavLink>;
+			},
 			sorter: (a, b) => {
 				if (a.projectName.toLowerCase().trim() < b.projectName.toLowerCase().trim()) {
 					return -1;
@@ -184,19 +187,7 @@ function ProjectManagement(props) {
 		<>
 			<DrawerCyberbug />
 			<div style={{ flex: 1 }}>
-				<Table
-					onRow={(record, rowIndex) => {
-						return {
-							onClick: e => {
-								props.history.push(`/cyberbug/${record.id}`);
-							},
-						};
-					}}
-					columns={columns}
-					rowKey="id"
-					dataSource={projects}
-					onChange={onChange}
-				/>
+				<Table columns={columns} rowKey="id" dataSource={projects} onChange={onChange} />
 			</div>
 		</>
 	);

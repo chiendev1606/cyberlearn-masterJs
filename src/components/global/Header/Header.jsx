@@ -17,11 +17,14 @@ export const Header = () => {
 						</NavLink>
 					</Typography>
 					<div className={classes.menu}>
-						<NavLink className={classes.link} to="/home">
+						<NavLink className={classes.link} to="/projectManagement">
 							Home
 						</NavLink>
 						<NavLink className={classes.link} to="/about">
 							About
+						</NavLink>
+						<NavLink className={classes.link} to="/login">
+							Login
 						</NavLink>
 						<NavLink className={classes.link} to="/login">
 							Login

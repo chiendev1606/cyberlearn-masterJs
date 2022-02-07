@@ -17,6 +17,8 @@ import {
 	CHANGE_SEARCH_TEXT,
 	CHANGE_VISIBLE_MODAL_EDIT_USER,
 	EDIT_USER,
+	UPDATE_COMMENT,
+	CHANGE_BUTTON_EDIT_COMMENT,
 } from '../../../util/constants/constants';
 
 export const dispatchCategoryProjectReducer = data => ({ type: GET_CATEGORY_PROJECT_API, payload: data });
@@ -62,5 +64,15 @@ export const dispatchActionChangeVisibleModalReducer = data => ({
 
 export const dispatchActionUserEdit = data => ({
 	type: EDIT_USER,
+	payload: data,
+});
+
+export const dispatchUpdateCommentReducer = data => ({
+	type: UPDATE_COMMENT,
+	payload: data,
+});
+
+export const dispatchChangeButtonEditComment = data => ({
+	type: CHANGE_BUTTON_EDIT_COMMENT,
 	payload: data,
 });

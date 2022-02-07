@@ -23,6 +23,8 @@ import {
 	watchActionSignUp,
 	watchActionEditUser,
 	watchActionDeleteUser,
+	watchActionInsertComment,
+	watchActionUpdateComment,
 } from './jiraSaga/JiraSaga';
 
 export default function* rootSaga() {
@@ -50,5 +52,7 @@ export default function* rootSaga() {
 		watchActionSignUp(),
 		watchActionEditUser(),
 		watchActionDeleteUser(),
+		watchActionInsertComment(),
+		watchActionUpdateComment(),
 	]);
 }
