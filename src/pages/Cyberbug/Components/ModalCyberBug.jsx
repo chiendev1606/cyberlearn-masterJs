@@ -1,12 +1,13 @@
 import { Tooltip } from '@mui/material';
 import { Editor } from '@tinymce/tinymce-react';
-import { Avatar, Modal, Popover, Select } from 'antd';
+import { Avatar, Modal, Popconfirm, Popover, Select } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	dispatchActionPostCommentSaga,
 	dispatchActionUpdateCommentSaga,
 	dispatchActionUpdateTaskSaga,
+	dispatchActionDeleteComment,
 } from '../../../sagas/jiraSaga/actions';
 import { dispatchActionChangeVisibleModal, dispatchUpdateCommentReducer } from '../actions/actions';
 import {
@@ -226,18 +227,25 @@ const ModalCyberBug = () => {
 															<button
 																className="btn btn-primary mt-3 w-25"
 																onClick={() => {
+																	if (!refEditorComment.current) return;
 																	isOnButtonEdit
 																		? dispatch(
 																				dispatchActionUpdateCommentSaga({
-																					taskId: taskDetail.taskId,
-																					contentComment: textInputComment,
-																					id: commentEdit.id,
+																					commentEdit: {
+																						taskId: taskDetail.taskId,
+																						contentComment: refEditorComment.current.getContent(),
+																						id: commentEdit.id,
+																					},
+																					resetInitialValue: setTextInputComment,
 																				})
 																		  )
 																		: dispatch(
 																				dispatchActionPostCommentSaga({
-																					taskId: taskDetail.taskId,
-																					contentComment: textInputComment,
+																					commentNew: {
+																						taskId: taskDetail.taskId,
+																						contentComment: refEditorComment.current.getContent(),
+																					},
+																					resetInitialValue: setTextInputComment,
 																				})
 																		  );
 																}}>
@@ -256,7 +264,10 @@ const ModalCyberBug = () => {
 																		</div>
 																		<div>
 																			<p style={{ marginBottom: 5 }}>{comment.name}</p>
-																			<p style={{ marginBottom: 5 }}>{comment.commentContent}</p>
+																			<div
+																				style={{ marginBottom: 1 }}
+																				dangerouslySetInnerHTML={{ __html: comment.commentContent }}
+																			/>
 																			{comment.idUser === user.id && (
 																				<div>
 																					<span
@@ -266,7 +277,24 @@ const ModalCyberBug = () => {
 																						}}>
 																						Edit
 																					</span>
-																					•<span style={{ color: '#929398', cursor: 'pointer' }}>Delete</span>
+																					•
+																					<Popconfirm
+																						placement="right"
+																						title="Do you want to delete this comment ??"
+																						onConfirm={() => {
+																							dispatch(
+																								dispatchActionDeleteComment({
+																									commentId: comment.id,
+																									taskId: taskDetail.taskId,
+																								})
+																							);
+																						}}
+																						okText="Yes"
+																						cancelText="No">
+																						<span style={{ color: '#929398', cursor: 'pointer' }}>
+																							Delete
+																						</span>
+																					</Popconfirm>
 																				</div>
 																			)}
 																		</div>
@@ -302,7 +330,7 @@ const ModalCyberBug = () => {
 												<h6>ASSIGNEES</h6>
 												<Avatar.Group size="large" maxCount={7}>
 													{taskDetail.assigness?.map(member => (
-														<Tooltip key={member.id} title={member.name} placement="top">
+														<Tooltip key={member.id} title={member.name ? member.name : ''} placement="top">
 															<Avatar src={member.avatar} />
 														</Tooltip>
 													))}
@@ -346,7 +374,7 @@ const ModalCyberBug = () => {
 											<div className="reporter">
 												<h6>REPORTER</h6>
 												<div style={{ display: 'flex' }} className="item">
-													<Tooltip title={reporter.id}>
+													<Tooltip title={reporter.id ? reporter.id : ''}>
 														<Avatar size="large">{reporter.name}</Avatar>
 													</Tooltip>
 												</div>

@@ -31,6 +31,7 @@ import {
 	CLOSE_DRAWER,
 	CREATE_PROJECT_AUTHORIZATION_SAGA,
 	CREATE_TASK_SAGA,
+	DELETE_COMMENT_SAGA,
 	DELETE_PROJECT_API_SAGA,
 	DELETE_USER_SAGA,
 	EDIT_PROJECT_SAGA,
@@ -215,7 +216,7 @@ export function* watchActionRemoveUserProject() {
 
 function* getProjectDetails(action) {
 	try {
-		const { data, status } = yield call(() => JiraAPI.getProjectDetails(action.payload));
+		const { data, status } = yield call(() => JiraAPI.getProjectDetails(Number(action.payload)));
 		if (status === STATUS_API.SUCCESS) {
 			yield put(dispatchGetProjectDetailsReducer(data.content));
 		}
@@ -441,10 +442,11 @@ export function* watchActionDeleteUser() {
 
 function* insertComment(action) {
 	try {
-		const { data, status } = yield call(() => JiraAPI.insertComment(action.payload));
+		const { data, status } = yield call(() => JiraAPI.insertComment(action.payload.commentNew));
 		if (status === STATUS_API.SUCCESS) {
-			yield put(dispatchActionGetTaskDetailsSaga(action.payload.taskId));
+			yield put(dispatchActionGetTaskDetailsSaga(action.payload.commentNew.taskId));
 			Notification('success', 'Đã thếm comment !!');
+			action.payload.resetInitialValue('');
 		}
 	} catch (error) {
 		Notification('error', 'Thếm comment thất bại !!');
@@ -457,12 +459,12 @@ export function* watchActionInsertComment() {
 }
 
 function* updateComment(action) {
-	console.log(action);
 	try {
-		const { data, status } = yield call(() => JiraAPI.updateComment(action.payload));
+		const { data, status } = yield call(() => JiraAPI.updateComment(action.payload.commentEdit));
 		if (status === STATUS_API.SUCCESS) {
 			yield put(dispatchChangeButtonEditComment(false));
-			yield put(dispatchActionGetTaskDetailsSaga(action.payload.taskId));
+			yield put(dispatchActionGetTaskDetailsSaga(action.payload.commentEdit.taskId));
+			action.payload.resetInitialValue('');
 		}
 	} catch (error) {
 		console.log(error);
@@ -471,4 +473,21 @@ function* updateComment(action) {
 
 export function* watchActionUpdateComment() {
 	yield takeLatest(UPDATE_COMMENT_SAGA, updateComment);
+}
+
+function* deleteComment(action) {
+	try {
+		const { status, data } = yield call(() => JiraAPI.deleteComment(action.payload.commentId));
+		if (status === STATUS_API.SUCCESS) {
+			Notification('success', 'Delete comment successfully ');
+			yield put(dispatchActionGetTaskDetailsSaga(action.payload.taskId));
+		}
+	} catch (error) {
+		Notification('error', 'Delete comment fail !!! ');
+		console.log(error);
+	}
+}
+
+export function* watchActionDeleteComment() {
+	yield takeLatest(DELETE_COMMENT_SAGA, deleteComment);
 }

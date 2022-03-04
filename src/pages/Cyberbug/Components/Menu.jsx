@@ -1,13 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import { userSelector } from '../Selectors/CyberBugSelectors';
+import { USER } from '../../../util/constants/constants';
 
 const Menu = () => {
-	const userLogin = useSelector(userSelector);
+	const userLogin = JSON.parse(localStorage.getItem(USER));
 
 	return (
-		<div className="menu">
+		<div className="menu" style={{ width: '300px', flexShrink: '0' }}>
 			<div className="account">
 				<div className="avatar">
 					<img src={userLogin.avatar} alt="menu" />

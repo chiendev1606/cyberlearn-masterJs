@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Form, Input, Space, Typography, Button } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { Button, Col, Form, Input, InputNumber, Row, Space, Typography } from 'antd';
 import { useFormik } from 'formik';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { dispatchActionSignUpSaga } from '../../sagas/jiraSaga/actions';
 
@@ -10,27 +10,29 @@ const SignUpCyberbug = () => {
 
 	const dispatch = useDispatch();
 
-	const { values, handleReset, handleSubmit, touched, handleBlur, handleChange, errors } = useFormik({
-		initialValues: {
-			email: '',
-			passWord: '',
-			phoneNumber: null,
-			name: '',
-		},
-		validationSchema: Yup.object().shape({
-			email: Yup.string().email('Email is invalid').required('Email cannot be blank '),
-			passWord: Yup.string()
-				.min(5, 'passWord has at least 5 characters')
-				.max(30, 'passWord has max 30 characters')
-				.required('passWord cannot be blank'),
-			name: Yup.string().required('name cannot be blank'),
-			phoneNumber: Yup.number('phone number must be number').required('phone number cannot be blank'),
-		}),
-		onSubmit: values => {
-			console.log(values);
-			dispatch(dispatchActionSignUpSaga({ values, handleReset }));
-		},
-	});
+	const { values, handleReset, handleSubmit, touched, handleBlur, handleChange, errors, setFieldValue } =
+		useFormik({
+			initialValues: {
+				email: '',
+				passWord: '',
+				phoneNumber: null,
+				name: '',
+			},
+			validationSchema: Yup.object().shape({
+				email: Yup.string().email('Email is invalid').required('Email cannot be blank '),
+				passWord: Yup.string()
+					.min(5, 'passWord has at least 5 characters')
+					.max(30, 'passWord has max 30 characters')
+					.required('passWord cannot be blank'),
+				name: Yup.string().required('name cannot be blank'),
+				phoneNumber: Yup.number()
+					.typeError('phone number must be number')
+					.required('phone number cannot be blank'),
+			}),
+			onSubmit: values => {
+				dispatch(dispatchActionSignUpSaga({ values, handleReset }));
+			},
+		});
 
 	useEffect(() => {
 		setSizeImg({ width: window.innerHeight, height: window.innerWidth / 2 });
@@ -47,7 +49,7 @@ const SignUpCyberbug = () => {
 				</Col>
 				<Col span={12}>
 					<div style={{ marginTop: '100px' }}>
-						<Typography.Title className="text-center" level="5" type="success">
+						<Typography.Title className="text-center" type="success">
 							Sign up
 						</Typography.Title>
 						<Form wrapperCol={{ span: 8 }} size="large" layout="horizontal" onFinish={handleSubmit}>
@@ -90,18 +92,18 @@ const SignUpCyberbug = () => {
 								</Col>
 								<Col span={24}>
 									<Form.Item
-										name="phoneNumber"
 										align="center"
 										{...(touched.phoneNumber &&
 											Boolean(errors.phoneNumber) && {
 												help: errors.phoneNumber,
 												validateStatus: 'error',
 											})}>
-										<Input
+										<InputNumber
+											name="phoneNumber"
+											className="w-100"
 											value={values.phoneNumber}
-											type="number"
 											onBlur={handleBlur}
-											onChange={handleChange}
+											onChange={value => setFieldValue('phoneNumber', value)}
 											placeholder="PhoneNumber..."
 										/>
 									</Form.Item>
@@ -131,7 +133,9 @@ const SignUpCyberbug = () => {
 												<Button type="primary" htmlType="submit">
 													Sign Up
 												</Button>
-												<Button type="danger">Sign In</Button>
+												<Button type="danger" href="/">
+													Sign In
+												</Button>
 											</Space>
 										</div>
 									</Form.Item>

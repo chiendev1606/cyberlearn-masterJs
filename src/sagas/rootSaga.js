@@ -25,6 +25,7 @@ import {
 	watchActionDeleteUser,
 	watchActionInsertComment,
 	watchActionUpdateComment,
+	watchActionDeleteComment,
 } from './jiraSaga/JiraSaga';
 
 export default function* rootSaga() {
@@ -54,5 +55,6 @@ export default function* rootSaga() {
 		watchActionDeleteUser(),
 		watchActionInsertComment(),
 		watchActionUpdateComment(),
+		watchActionDeleteComment(),
 	]);
 }

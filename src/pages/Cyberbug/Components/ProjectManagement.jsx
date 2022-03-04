@@ -5,10 +5,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import {
+	dipatchActionAddUserProjectSaga,
 	dispatchActionDeleteProjectSaga,
 	dispatchActionGetProjectsSaga,
 	dispatchActionSearchUserSaga,
-	dipatchActionAddUserProjectSaga,
 	dispatchRemoveUserProjectSaga,
 } from '../../../sagas/jiraSaga/actions';
 import { OPEN_DRAWER } from '../../../util/constants/constants';

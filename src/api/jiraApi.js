@@ -2,7 +2,7 @@ import Axios from 'axios';
 import { ACCESS_TOKEN } from '../util/constants/constants';
 
 const URL = 'http://casestudy.cyberlearn.vn';
-const headers = { Authorization: 'bearer ' + localStorage.getItem(ACCESS_TOKEN) };
+const headers = { Authorization: 'Bearer ' + localStorage.getItem(ACCESS_TOKEN) };
 
 export const JiraAPI = {
 	singIn: user =>
@@ -88,4 +88,6 @@ export const JiraAPI = {
 			method: 'put',
 			headers,
 		}),
+	deleteComment: data =>
+		Axios({ url: `${URL}/api/Comment/deleteComment?idComment=${data}`, method: 'delete', headers }),
 };
